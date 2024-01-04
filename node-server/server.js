@@ -18,16 +18,24 @@ http.createServer((req, res) => {
 }).listen('3000', () => console.log('OK 서버 시작'))
 
 const user = (req, res) => {
-  const userInfo = url.parse(req.url, true).query
-  res.end(`[user] name: ${userInfo.name}, age: ${userInfo.age}`)
+  if (req.method === 'GET') {
+    const userInfo = url.parse(req.url, true).query
+    res.end(`[user] name: ${userInfo.name}, age: ${userInfo.age}`)
+  } else {
+    notFound(req, res)
+  }
 }
 
 const feed = (req, res) => {
-  res.end(`<ul>
-    <li>picture1</li>
-    <li>picture2</li>
-    <li>picture3</li>
-  </ul>`)
+  if (req.method === 'GET') {
+    res.end(`<ul>
+      <li>picture1</li>
+      <li>picture2</li>
+      <li>picture3</li>
+    </ul>`)
+  } else {
+    notFound(req, res)
+  }
 }
 
 const notFound = (req, res) => {
