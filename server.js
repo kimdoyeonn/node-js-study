@@ -5,17 +5,21 @@ http.createServer((req, res) => {
   const path = url.parse(req.url, true).pathname
   res.setHeader('Content-Type', 'text/html')
 
-  if (path === '/user') {
-    user(req, res)
-  } else if (path === '/feed') {
-    feed(req, res)
+  if (path in urlMap) {
+    try {
+      urlMap[path](req, res)
+    } catch (error) {
+      console.log(error)
+      serverError(req, res)
+    }
   } else {
     notFound(req, res)
   }
 }).listen('3000', () => console.log('OK 서버 시작'))
 
 const user = (req, res) => {
-  res.end('[user] name: andy, age: 30')
+  const userInfo = url.parse(req.url, true).query
+  res.end(`[user] name: ${userInfo.name}, age: ${userInfo.age}`)
 }
 
 const feed = (req, res) => {
@@ -29,4 +33,15 @@ const feed = (req, res) => {
 const notFound = (req, res) => {
   res.statusCode = 404
   res.end('404 page not found')
+}
+
+const serverError = (req, res) => {
+  res.statusCode = 500
+  res.end('Server Error')
+}
+
+const urlMap = {
+  '/': (req, res) => res.end("HOME"),
+  '/user': user,
+  '/feed': feed
 }
